@@ -5,6 +5,7 @@ import { mongoURL } from "./config/keys.js";
 import passport from "passport";
 import users from "./routes/api/users.js";
 import ps from "./config/passport.js";
+import path from "path";
 
 const app = express();
 
@@ -21,4 +22,11 @@ mongoose
   .then(() => console.log("MongoDB successfully connected!"))
   .catch((err) => console.log(err));
 
-app.listen(5000, () => console.log("Server up!"));
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static("client/build"));
+  app.get("*", (request, response) => {
+    response.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
+
+app.listen(process.env.PORT, () => console.log("Server up!"));
